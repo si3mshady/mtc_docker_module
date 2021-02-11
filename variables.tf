@@ -1,3 +1,18 @@
+variable "env" {
+    type = string
+    description = "deployment environment"
+    default = "dev"
+}
+
+variable "image" {
+    type = map
+    description = "container image version"
+    default = {
+        dev = "nodered/node-red:latest"
+        prod = "nodered/node-red:latest-minimal"
+    }
+}
+
 variable "ext_port" {
     type = list
     # type = number

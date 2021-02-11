@@ -10,13 +10,20 @@ resource "random_string" "random" {
 
 
 
-module "image" {
-  source = "./image"
+# module "image" {
+#   source = "./image"
+# }
+
+
+resource "docker_image" "nodered" {
+  name = lookup(var.image,var.env)
 }
+
+
 
 resource "null_resource" "dockervol" {
       provisioner "local-exec" {
-        command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol/"
+        command = "mkdir ${path.cwd}/noderedvol || true && sudo chown -R 1000:1000 ${path.cwd}/noderedvol"
       }  
   }
 
@@ -24,7 +31,7 @@ resource "null_resource" "dockervol" {
 resource "docker_container" "nodered_container" {
   count = local.container_count
   name  = join("-", ["nodered", random_string.random[count.index].result])
-  image = module.image.image_out
+  image = lookup(var.image,var.env)
 
   ports {
     internal = var.int_port
@@ -36,7 +43,7 @@ resource "docker_container" "nodered_container" {
   
   volumes {
       container_path = "/data"
-      host_path = "/home/ubuntu/environment/terraform_docker/noderedvol"
+      host_path = "${path.cwd}/noderedvol"
   }
 }
 
