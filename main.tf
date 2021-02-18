@@ -7,14 +7,6 @@ resource "random_string" "random" {
   upper   = false
 }
 
-
-
-
-# module "image" {
-#   source = "./image"
-# }
-
-
 resource "docker_image" "nodered" {
   name = lookup(var.image,var.env)
 }
@@ -35,7 +27,7 @@ resource "docker_container" "nodered_container" {
 
   ports {
     internal = var.int_port
-    external = var.ext_port[count.index]
+    external = lookup(var.ext_port,var.env)[count.index]
     protocol = "tcp"
     ip       = "0.0.0.0"
 
